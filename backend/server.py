@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,9 +6,11 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
+import random
+import string
 
 
 ROOT_DIR = Path(__file__).parent
@@ -26,31 +28,228 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 
-# Define Models
-class StatusCheck(BaseModel):
+# ============= MODELS =============
+
+# Venue Models
+class TimeSlot(BaseModel):
+    time: str  # e.g., "09:00 AM"
+    available: bool = True
+    price: float
+
+class Venue(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    name: str
+    location: str
+    sport: str  # "Badminton" or "Cricket"
+    image: Optional[str] = None  # base64 image
+    rating: float
+    smart_recording: bool = True
+    base_price: float
+    super_video_price: float
+    amenities: List[str]
+    slots: List[TimeSlot]
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+class VenueCreate(BaseModel):
+    name: str
+    location: str
+    sport: str
+    image: Optional[str] = None
+    rating: float = 4.5
+    base_price: float
+    super_video_price: float
+    amenities: List[str] = []
 
-# Add your routes to the router instead of directly to app
+# Booking Models
+class BookingCreate(BaseModel):
+    venue_id: str
+    venue_name: str
+    date: str  # "2025-07-15"
+    time_slot: str  # "09:00 AM"
+    sport: str
+    super_video_enabled: bool = False
+    total_price: float
+    user_name: str = "Guest User"
+
+class Booking(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    venue_id: str
+    venue_name: str
+    date: str
+    time_slot: str
+    sport: str
+    super_video_enabled: bool
+    total_price: float
+    user_name: str
+    pin_code: str = Field(default_factory=lambda: ''.join(random.choices(string.digits, k=6)))
+    status: str = "confirmed"  # confirmed, completed, cancelled
+    video_status: str = "pending"  # pending, processing, ready
+    video_url: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+# Video Models
+class Video(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    booking_id: str
+    venue_name: str
+    sport: str
+    thumbnail: str  # base64
+    video_url: str  # base64 or URL
+    duration: int = 45  # seconds
+    likes: int = 0
+    views: int = 0
+    user_name: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class VideoCreate(BaseModel):
+    booking_id: str
+    venue_name: str
+    sport: str
+    user_name: str
+
+
+# ============= ROUTES =============
+
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "CourtBook API - Playo Clone with Super Video"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.dict()
-    status_obj = StatusCheck(**status_dict)
-    _ = await db.status_checks.insert_one(status_obj.dict())
-    return status_obj
+# Venue Endpoints
+@api_router.post("/venues", response_model=Venue)
+async def create_venue(venue: VenueCreate):
+    """Create a new venue"""
+    # Generate default time slots
+    slots = []
+    start_hour = 6
+    for i in range(16):  # 6 AM to 10 PM (16 hours)
+        hour = start_hour + i
+        am_pm = "AM" if hour < 12 else "PM"
+        display_hour = hour if hour <= 12 else hour - 12
+        if display_hour == 0:
+            display_hour = 12
+        time_str = f"{display_hour:02d}:00 {am_pm}"
+        
+        slots.append(TimeSlot(
+            time=time_str,
+            available=True,
+            price=venue.base_price
+        ))
+    
+    venue_dict = venue.dict()
+    venue_dict['slots'] = [slot.dict() for slot in slots]
+    venue_obj = Venue(**venue_dict)
+    
+    await db.venues.insert_one(venue_obj.dict())
+    return venue_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    status_checks = await db.status_checks.find().to_list(1000)
-    return [StatusCheck(**status_check) for status_check in status_checks]
+@api_router.get("/venues", response_model=List[Venue])
+async def get_venues(sport: Optional[str] = None):
+    """Get all venues, optionally filtered by sport"""
+    query = {}
+    if sport:
+        query['sport'] = sport
+    
+    venues = await db.venues.find(query).to_list(100)
+    return [Venue(**venue) for venue in venues]
+
+@api_router.get("/venues/{venue_id}", response_model=Venue)
+async def get_venue(venue_id: str):
+    """Get a specific venue by ID"""
+    venue = await db.venues.find_one({"id": venue_id})
+    if not venue:
+        raise HTTPException(status_code=404, detail="Venue not found")
+    return Venue(**venue)
+
+# Booking Endpoints
+@api_router.post("/bookings", response_model=Booking)
+async def create_booking(booking: BookingCreate):
+    """Create a new booking"""
+    booking_obj = Booking(**booking.dict())
+    await db.bookings.insert_one(booking_obj.dict())
+    return booking_obj
+
+@api_router.get("/bookings", response_model=List[Booking])
+async def get_bookings(user_name: Optional[str] = None):
+    """Get all bookings, optionally filtered by user"""
+    query = {}
+    if user_name:
+        query['user_name'] = user_name
+    
+    bookings = await db.bookings.find(query).sort("created_at", -1).to_list(100)
+    return [Booking(**booking) for booking in bookings]
+
+@api_router.get("/bookings/{booking_id}", response_model=Booking)
+async def get_booking(booking_id: str):
+    """Get a specific booking by ID"""
+    booking = await db.bookings.find_one({"id": booking_id})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    return Booking(**booking)
+
+@api_router.put("/bookings/{booking_id}/video-status")
+async def update_video_status(booking_id: str, status: str, video_url: Optional[str] = None):
+    """Update video processing status for a booking"""
+    update_data = {"video_status": status}
+    if video_url:
+        update_data["video_url"] = video_url
+    
+    result = await db.bookings.update_one(
+        {"id": booking_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    return {"success": True, "status": status}
+
+# Video Endpoints
+@api_router.post("/videos", response_model=Video)
+async def create_video(video: VideoCreate):
+    """Create a new highlight video"""
+    # Mock video data - in real app, this would come from AI processing
+    mock_thumbnail = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+    mock_video = "mock_video_url"
+    
+    video_dict = video.dict()
+    video_dict['thumbnail'] = mock_thumbnail
+    video_dict['video_url'] = mock_video
+    video_obj = Video(**video_dict)
+    
+    await db.videos.insert_one(video_obj.dict())
+    return video_obj
+
+@api_router.get("/videos", response_model=List[Video])
+async def get_videos():
+    """Get all videos for the Flex Feed"""
+    videos = await db.videos.find().sort("created_at", -1).to_list(100)
+    return [Video(**video) for video in videos]
+
+@api_router.put("/videos/{video_id}/like")
+async def like_video(video_id: str):
+    """Like a video"""
+    result = await db.videos.update_one(
+        {"id": video_id},
+        {"$inc": {"likes": 1}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Video not found")
+    
+    return {"success": True}
+
+@api_router.put("/videos/{video_id}/view")
+async def view_video(video_id: str):
+    """Increment video view count"""
+    result = await db.videos.update_one(
+        {"id": video_id},
+        {"$inc": {"views": 1}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Video not found")
+    
+    return {"success": True}
 
 # Include the router in the main app
 app.include_router(api_router)
