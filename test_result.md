@@ -282,9 +282,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Backend venue APIs"
-    - "Backend booking APIs"
-    - "Backend video APIs"
+    - "Frontend tab navigation structure"
+    - "Frontend home screen - venue discovery"
+    - "Frontend venue detail screen"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
