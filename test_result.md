@@ -140,15 +140,18 @@ backend:
 
   - task: "Video API endpoints"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Created POST /api/videos, GET /api/videos, PUT /api/videos/{id}/like, PUT /api/videos/{id}/view endpoints. Mock video data."
+      - working: true
+        agent: "testing"
+        comment: "✅ ALL VIDEO APIs WORKING: POST /api/videos creates videos with mock data, GET /api/videos retrieves all videos, PUT /api/videos/{id}/like increments likes correctly, PUT /api/videos/{id}/view increments views correctly. All endpoints tested and functional."
 
   - task: "Database seed script"
     implemented: true
