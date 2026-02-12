@@ -234,7 +234,7 @@ export default function BookingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0A0F1E',
   },
   header: {
     flexDirection: 'row',
@@ -258,11 +258,14 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     borderRadius: 10,
-    backgroundColor: '#1f2937',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   filterTabActive: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#667eea',
+    borderColor: '#667eea',
   },
   filterTabText: {
     color: '#9ca3af',
