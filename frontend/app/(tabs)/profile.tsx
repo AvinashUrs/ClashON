@@ -133,9 +133,9 @@ export default function ProfileScreen() {
 
         {/* App Info */}
         <View style={styles.appInfo}>
-          <Text style={styles.appName}>CourtBook</Text>
+          <Text style={styles.appName}>ClashON</Text>
           <Text style={styles.appVersion}>Version 1.0.0</Text>
-          <Text style={styles.appTagline}>Book Courts. Capture Moments.</Text>
+          <Text style={styles.appTagline}>Book Courts. Capture Glory.</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
