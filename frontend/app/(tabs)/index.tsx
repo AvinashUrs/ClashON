@@ -8,16 +8,22 @@ import {
   TextInput,
   Image,
   ActivityIndicator,
+  LinearGradient,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import { useStore } from '../../store/useStore';
+import { LinearGradient as ExpoLinearGradient } from 'expo-linear-gradient';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
-const SPORTS = ['All', 'Badminton', 'Cricket'];
+const SPORTS = [
+  { id: 'All', label: 'All Sports', icon: 'flame' },
+  { id: 'Badminton', label: 'Badminton', icon: 'tennisball' },
+  { id: 'Cricket', label: 'Cricket', icon: 'baseball' }
+];
 
 export default function HomeScreen() {
   const router = useRouter();
