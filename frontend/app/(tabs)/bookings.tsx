@@ -75,7 +75,7 @@ export default function BookingsScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>My Bookings</Text>
         <TouchableOpacity onPress={loadBookings}>
-          <Ionicons name="refresh" size={24} color="#10b981" />
+          <Ionicons name="refresh" size={24} color="#667eea" />
         </TouchableOpacity>
       </View>
 
