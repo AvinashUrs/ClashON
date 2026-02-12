@@ -284,16 +284,16 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#10b981',
+    color: '#667eea',
   },
   appVersion: {
     fontSize: 12,
-    color: '#6b7280',
+    color: '#4a5568',
     marginTop: 4,
   },
   appTagline: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: '#8b9dc3',
     marginTop: 8,
     fontStyle: 'italic',
   },
