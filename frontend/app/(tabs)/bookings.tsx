@@ -206,7 +206,7 @@ export default function BookingsScreen() {
                   <Ionicons
                     name="videocam"
                     size={16}
-                    color={booking.video_status === 'ready' ? '#10b981' : '#fbbf24'}
+                    color={booking.video_status === 'ready' ? '#667eea' : '#fbbf24'}
                   />
                   <Text
                     style={[
