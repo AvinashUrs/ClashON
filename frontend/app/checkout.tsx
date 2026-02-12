@@ -226,7 +226,7 @@ export default function CheckoutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0A0F1E',
   },
   safeArea: {
     flex: 1,
