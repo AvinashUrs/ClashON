@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
   pinCode: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#10b981',
+    color: '#667eea',
     letterSpacing: 2,
   },
   videoStatusContainer: {
