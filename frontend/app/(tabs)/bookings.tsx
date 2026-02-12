@@ -136,7 +136,7 @@ export default function BookingsScreen() {
       >
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#10b981" />
+            <ActivityIndicator size="large" color="#667eea" />
           </View>
         ) : filteredBookings.length === 0 ? (
           <View style={styles.emptyContainer}>
