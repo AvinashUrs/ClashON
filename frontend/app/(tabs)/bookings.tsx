@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     color: '#667eea',
   },
   watchButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#667eea',
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 8,
