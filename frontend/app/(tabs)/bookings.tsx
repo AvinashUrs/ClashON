@@ -364,13 +364,15 @@ const styles = StyleSheet.create({
     color: '#d1d5db',
   },
   pinContainer: {
-    backgroundColor: '#374151',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     padding: 12,
     borderRadius: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
   pinLabel: {
     fontSize: 14,
