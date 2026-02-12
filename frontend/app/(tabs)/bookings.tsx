@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   videoReadyText: {
-    color: '#10b981',
+    color: '#667eea',
   },
   watchButton: {
     backgroundColor: '#10b981',
