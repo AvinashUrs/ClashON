@@ -180,11 +180,11 @@ export default function FlexFeedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#0A0F1E',
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0A0F1E',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -202,13 +202,13 @@ const styles = StyleSheet.create({
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: '#8b9dc3',
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 20,
   },
   exploreButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#667eea',
     paddingHorizontal: 32,
     paddingVertical: 14,
     borderRadius: 12,
