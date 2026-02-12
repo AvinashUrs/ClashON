@@ -167,7 +167,7 @@ export default function BookingsScreen() {
                   <Ionicons
                     name={booking.sport === 'Badminton' ? 'tennisball' : 'baseball'}
                     size={24}
-                    color="#10b981"
+                    color="#667eea"
                   />
                 </View>
                 <View style={styles.venueDetails}>
