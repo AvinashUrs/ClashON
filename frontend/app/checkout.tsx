@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   payButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#667eea',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 32,
