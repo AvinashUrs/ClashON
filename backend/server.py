@@ -112,7 +112,7 @@ class VideoCreate(BaseModel):
 
 @api_router.get("/")
 async def root():
-    return {"message": "CourtBook API - Playo Clone with Super Video"}
+    return {"message": "ClashON API - Book Courts. Capture Glory.","version": "1.0", "status": "active"}
 
 # Venue Endpoints
 @api_router.post("/venues", response_model=Venue)
