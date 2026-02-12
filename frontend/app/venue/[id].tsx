@@ -264,17 +264,17 @@ export default function VenueDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0A0F1E',
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0A0F1E',
     justifyContent: 'center',
     alignItems: 'center',
   },
   errorContainer: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#0A0F1E',
     justifyContent: 'center',
     alignItems: 'center',
   },
