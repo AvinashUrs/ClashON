@@ -302,11 +302,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   bookingCard: {
-    backgroundColor: '#1f2937',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     position: 'relative',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   statusBadge: {
     position: 'absolute',
