@@ -19,7 +19,7 @@ import { useStore } from '../../store/useStore';
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 const SPORTS = [
-  { id: 'All', label: 'All Sports', icon: 'flame-outline' },
+  { id: 'All', label: 'All', icon: 'apps-outline' },
   { id: 'Badminton', label: 'Badminton', icon: 'tennisball-outline' },
   { id: 'Cricket', label: 'Cricket', icon: 'baseball-outline' }
 ];
