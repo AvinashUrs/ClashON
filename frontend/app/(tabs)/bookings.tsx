@@ -48,7 +48,7 @@ export default function BookingsScreen() {
       case 'confirmed':
         return '#3b82f6';
       case 'completed':
-        return '#10b981';
+        return '#667eea';
       case 'cancelled':
         return '#ef4444';
       default:
