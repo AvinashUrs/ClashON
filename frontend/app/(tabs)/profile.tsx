@@ -6,19 +6,42 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useStore } from '../../store/useStore';
+import { useAuthStore } from '../../store/authStore';
+import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
-  const { userName, setUserName } = useStore();
+  const router = useRouter();
+  const { user, logout, updateUser } = useAuthStore();
   const [isEditing, setIsEditing] = React.useState(false);
-  const [tempName, setTempName] = React.useState(userName);
+  const [tempName, setTempName] = React.useState(user?.name || '');
 
   const handleSave = () => {
-    setUserName(tempName);
-    setIsEditing(false);
+    if (user) {
+      updateUser({ name: tempName });
+      setIsEditing(false);
+    }
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: () => {
+            logout();
+            router.replace('/login');
+          },
+        },
+      ]
+    );
   };
 
   return (
