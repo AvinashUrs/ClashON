@@ -28,6 +28,34 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 
+# ============= AUTH MODELS =============
+
+class User(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    phone: str
+    name: Optional[str] = None
+    email: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class OTPRequest(BaseModel):
+    phone: str
+
+class OTPVerify(BaseModel):
+    phone: str
+    otp: str
+
+class OTPRecord(BaseModel):
+    phone: str
+    otp: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    expires_at: datetime
+    verified: bool = False
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+
+
 # ============= MODELS =============
 
 # Venue Models
@@ -69,7 +97,8 @@ class BookingCreate(BaseModel):
     sport: str
     super_video_enabled: bool = False
     total_price: float
-    user_name: str = "Guest User"
+    user_id: str
+    user_name: str
 
 class Booking(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -80,6 +109,7 @@ class Booking(BaseModel):
     sport: str
     super_video_enabled: bool
     total_price: float
+    user_id: str
     user_name: str
     pin_code: str = Field(default_factory=lambda: ''.join(random.choices(string.digits, k=6)))
     status: str = "confirmed"  # confirmed, completed, cancelled
@@ -98,6 +128,7 @@ class Video(BaseModel):
     duration: int = 45  # seconds
     likes: int = 0
     views: int = 0
+    user_id: str
     user_name: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -105,7 +136,100 @@ class VideoCreate(BaseModel):
     booking_id: str
     venue_name: str
     sport: str
+    user_id: str
     user_name: str
+
+
+# ============= AUTH ROUTES =============
+
+@api_router.post("/auth/request-otp")
+async def request_otp(request: OTPRequest):
+    """Generate and send OTP to phone number"""
+    # Generate 6-digit OTP
+    otp = ''.join(random.choices(string.digits, k=6))
+    
+    # Store OTP with 5 minute expiry
+    otp_record = OTPRecord(
+        phone=request.phone,
+        otp=otp,
+        expires_at=datetime.utcnow() + timedelta(minutes=5)
+    )
+    
+    # Delete any existing OTPs for this phone
+    await db.otps.delete_many({"phone": request.phone})
+    
+    # Store new OTP
+    await db.otps.insert_one(otp_record.dict())
+    
+    # In production, send OTP via SMS service (Twilio, etc.)
+    # For demo, return OTP in response
+    return {
+        "success": True,
+        "message": f"OTP sent to {request.phone}",
+        "otp": otp  # Remove this in production!
+    }
+
+@api_router.post("/auth/verify-otp")
+async def verify_otp(verify: OTPVerify):
+    """Verify OTP and login/signup user"""
+    # Find OTP record
+    otp_record = await db.otps.find_one({
+        "phone": verify.phone,
+        "otp": verify.otp,
+        "verified": False
+    })
+    
+    if not otp_record:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+    
+    # Check if OTP expired
+    if datetime.utcnow() > otp_record['expires_at']:
+        raise HTTPException(status_code=400, detail="OTP expired")
+    
+    # Mark OTP as verified
+    await db.otps.update_one(
+        {"phone": verify.phone, "otp": verify.otp},
+        {"$set": {"verified": True}}
+    )
+    
+    # Find or create user
+    user = await db.users.find_one({"phone": verify.phone})
+    
+    if not user:
+        # Create new user
+        new_user = User(phone=verify.phone, name=f"User {verify.phone[-4:]}")
+        await db.users.insert_one(new_user.dict())
+        user = new_user.dict()
+    
+    return {
+        "success": True,
+        "message": "Login successful",
+        "user": User(**user)
+    }
+
+@api_router.get("/auth/user/{user_id}")
+async def get_user(user_id: str):
+    """Get user profile"""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return User(**user)
+
+@api_router.put("/auth/user/{user_id}")
+async def update_user(user_id: str, update: UserUpdate):
+    """Update user profile"""
+    update_data = {k: v for k, v in update.dict().items() if v is not None}
+    
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user = await db.users.find_one({"id": user_id})
+    return User(**user)
 
 
 # ============= ROUTES =============
@@ -169,11 +293,11 @@ async def create_booking(booking: BookingCreate):
     return booking_obj
 
 @api_router.get("/bookings", response_model=List[Booking])
-async def get_bookings(user_name: Optional[str] = None):
+async def get_bookings(user_id: Optional[str] = None):
     """Get all bookings, optionally filtered by user"""
     query = {}
-    if user_name:
-        query['user_name'] = user_name
+    if user_id:
+        query['user_id'] = user_id
     
     bookings = await db.bookings.find(query).sort("created_at", -1).to_list(100)
     return [Booking(**booking) for booking in bookings]
