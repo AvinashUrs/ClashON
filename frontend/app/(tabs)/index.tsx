@@ -99,22 +99,13 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Sport Filters */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.filterContainer}
-          contentContainerStyle={styles.filterContent}
-        >
+        {/* Sport Filters - Compact Pills */}
+        <View style={styles.filterRow}>
           {SPORTS.map((sport) => {
             const isSelected = selectedSport === sport.id;
             return (
               <TouchableOpacity
                 key={sport.id}
-                style={[
-                  styles.filterChip,
-                  isSelected && styles.filterChipActive,
-                ]}
                 onPress={() => setSelectedSport(sport.id)}
               >
                 {isSelected ? (
@@ -122,21 +113,21 @@ export default function HomeScreen() {
                     colors={['#667eea', '#764ba2']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    style={styles.filterGradient}
+                    style={styles.filterPill}
                   >
-                    <Ionicons name={sport.icon} size={18} color="#fff" />
+                    <Ionicons name={sport.icon.replace('-outline', '')} size={16} color="#fff" />
                     <Text style={styles.filterTextActive}>{sport.label}</Text>
                   </LinearGradient>
                 ) : (
-                  <>
-                    <Ionicons name={sport.icon} size={18} color="#8b9dc3" />
-                    <Text style={styles.filterText}>{sport.label}</Text>
-                  </>
+                  <View style={styles.filterPillInactive}>
+                    <Ionicons name={sport.icon} size={16} color="#8b9dc3" />
+                    <Text style={styles.filterTextInactive}>{sport.label}</Text>
+                  </View>
                 )}
               </TouchableOpacity>
             );
           })}
-        </ScrollView>
+        </View>
 
         {/* Venues List */}
         <ScrollView 
