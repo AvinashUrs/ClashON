@@ -295,46 +295,40 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '500',
   },
-  filterContainer: {
-    marginBottom: 20,
-  },
-  filterContent: {
+  filterRow: {
+    flexDirection: 'row',
     paddingHorizontal: 20,
+    marginBottom: 20,
     gap: 10,
   },
-  filterChip: {
+  filterPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 6,
+  },
+  filterPillInactive: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     gap: 6,
-    marginRight: 8,
-  },
-  filterChipActive: {
-    backgroundColor: 'transparent',
-    borderColor: 'transparent',
-  },
-  filterGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 10,
-    gap: 6,
-  },
-  filterText: {
-    color: '#8b9dc3',
-    fontSize: 13,
-    fontWeight: '600',
   },
   filterTextActive: {
     color: '#fff',
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
+  },
+  filterTextInactive: {
+    color: '#8b9dc3',
+    fontSize: 12,
+    fontWeight: '600',
   },
   venuesList: {
     flex: 1,
