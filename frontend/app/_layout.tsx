@@ -1,14 +1,25 @@
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 
 export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const [isNavigationReady, setIsNavigationReady] = useState(false);
 
   useEffect(() => {
+    // Wait for navigation to be ready
+    const timer = setTimeout(() => {
+      setIsNavigationReady(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!isNavigationReady) return;
+
     const inAuthGroup = segments[0] === '(tabs)';
 
     if (!isAuthenticated && inAuthGroup) {
@@ -18,7 +29,7 @@ export default function RootLayout() {
       // Redirect to app if authenticated
       router.replace('/(tabs)');
     }
-  }, [isAuthenticated, segments]);
+  }, [isAuthenticated, segments, isNavigationReady]);
 
   return (
     <SafeAreaProvider>
