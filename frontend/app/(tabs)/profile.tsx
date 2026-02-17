@@ -82,14 +82,14 @@ export default function ProfileScreen() {
               </View>
             ) : (
               <>
-                <Text style={styles.userName}>{userName}</Text>
+                <Text style={styles.userName}>{user?.name || 'User'}</Text>
                 <TouchableOpacity onPress={() => setIsEditing(true)}>
-                  <Ionicons name="create" size={20} color="#10b981" />
+                  <Ionicons name="create" size={20} color="#667eea" />
                 </TouchableOpacity>
               </>
             )}
           </View>
-          <Text style={styles.userEmail}>guest@courtbook.com</Text>
+          <Text style={styles.userEmail}>{user?.phone || ''}</Text>
         </View>
 
         {/* Stats */}
