@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { useAuthStore } from '../../store/authStore';
+import { useStore } from '../../store/useStore';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
