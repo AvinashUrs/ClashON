@@ -11,12 +11,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { useStore } from '../../store/useStore';
+import { useAuthStore } from '../../store/authStore';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 export default function BookingsScreen() {
-  const { bookings, setBookings, userName } = useStore();
+  const { bookings, setBookings } = useStore();
+  const user = useAuthStore((state) => state.user);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<'all' | 'confirmed' | 'completed'>('all');
 
@@ -28,7 +29,7 @@ export default function BookingsScreen() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${BACKEND_URL}/api/bookings?user_name=${userName}`
+        `${BACKEND_URL}/api/bookings?user_id=${user?.id}`
       );
       setBookings(response.data);
     } catch (error) {
