@@ -44,7 +44,8 @@ export default function CheckoutScreen() {
         sport: params.sport,
         super_video_enabled: superVideoEnabled,
         total_price: totalPrice,
-        user_name: userName,
+        user_id: user?.id || '',
+        user_name: user?.name || 'Guest User',
       };
 
       const response = await axios.post(
