@@ -152,6 +152,14 @@ export default function ProfileScreen() {
             <Text style={styles.menuText}>Help & Support</Text>
             <Ionicons name="chevron-forward" size={20} color="#6b7280" />
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+            <View style={styles.menuIconContainer}>
+              <Ionicons name="log-out" size={20} color="#ef4444" />
+            </View>
+            <Text style={[styles.menuText, { color: '#ef4444' }]}>Logout</Text>
+            <Ionicons name="chevron-forward" size={20} color="#6b7280" />
+          </TouchableOpacity>
         </View>
 
         {/* App Info */}
