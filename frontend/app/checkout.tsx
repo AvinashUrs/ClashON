@@ -12,14 +12,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
-import { useStore } from '../store/useStore';
+import { useAuthStore } from '../store/authStore';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 export default function CheckoutScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { userName } = useStore();
+  const user = useAuthStore((state) => state.user);
   
   const [superVideoEnabled, setSuperVideoEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
